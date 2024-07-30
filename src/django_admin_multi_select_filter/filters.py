@@ -16,6 +16,9 @@ class MultiSelectFieldListFilter(admin.FieldListFilter):
         self.lookup_val = self.used_parameters.get(self.lookup_kwarg, [])
         if len(self.lookup_val) == 1 and self.lookup_val[0] == "":
             self.lookup_val = []
+        elif len(self.lookup_val) == 1 and type(self.lookup_val[0]) != str:
+            # In Django 5.0, we get an extra list
+            self.lookup_val = self.lookup_val[0]
         self.lookup_val_isnull = self.used_parameters.get(self.lookup_kwarg_isnull)
 
         self.empty_value_display = model_admin.get_empty_value_display()
@@ -30,9 +33,10 @@ class MultiSelectFieldListFilter(admin.FieldListFilter):
         )
         self.field_verboses = {}
         if self.field.choices:
-            self.field_verboses = {field_value: field_verbose for
-                                   field_value, field_verbose in
-                                   self.field.choices}
+            self.field_verboses = {
+                field_value: field_verbose
+                for field_value, field_verbose in self.field.choices
+            }
 
     def expected_parameters(self):
         return [self.lookup_kwarg, self.lookup_kwarg_isnull]
@@ -91,12 +95,16 @@ class MultiSelectRelatedFieldListFilter(admin.RelatedFieldListFilter):
         self.lookup_kwarg = "%s__%s__in" % (field_path, field.target_field.name)
         self.lookup_kwarg_isnull = "%s__isnull" % field_path
         values = params.get(self.lookup_kwarg, [])
+        if len(values) == 1 and type(values[0]) != str:
+            # In Django 5.0, we get an extra list
+            values = values[0]
         self.lookup_val = values.split(",") if values else []
         self.lookup_choices = self.field_choices(field, request, model_admin)
 
     def choices(self, changelist):
         yield {
-            "selected": self.lookup_val is None and not self.lookup_val_isnull,
+            "selected": (self.lookup_val is None or self.lookup_val == [])
+            and not self.lookup_val_isnull,
             "query_string": changelist.get_query_string(
                 remove=[self.lookup_kwarg, self.lookup_kwarg_isnull]
             ),
