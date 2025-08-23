@@ -5,6 +5,7 @@ description = "Django admin filter for multiple select"
 readme = "README.md"
 authors = [{ name = "Job Doesburg", email = "job.doesburg@gmail.com" }]
 license = { file = "LICENSE" }
+requires-python = ">=3"
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
@@ -20,10 +21,15 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
 ]
+
 dependencies = [
     "django>=3",
 ]
-requires-python = ">=3"
+
+[project.optional-dependencies]
+django42 = ["django~=4.2.0"]
+django52 = ["django~=5.2.0"]
+test = ["pytest", "pytest-django", "factory_boy"]
 
 [project.urls]
 homepage = "https://github.com/JobDoesburg/django-admin-multi-select-filter"
@@ -39,3 +45,24 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "*" = ["*.html"]
+
+[tool.ruff]
+line-length = 119
+output-format = "grouped"
+show-fixes = true
+target-version = "py313"
+exclude = [".svn", "CVS", ".bzr", ".hg",".git", "__pycache__", ".tox", ".eggs", "*.egg", ".venv", "env", "venv", "build"]
+
+[tool.ruff.lint]
+select = ["W", "E", "F", "I", "N", "DJ", "T20", "Q"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 6
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.app.settings"
+addopts = "-ra -q"
+pythonpath =". src"
