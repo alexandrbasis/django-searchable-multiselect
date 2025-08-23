@@ -55,13 +55,6 @@ jobs:
           pip install $TEST_DEPENDENCIES
       - name: test
         run: tox -m "py3${{ matrix.minor_versions }}"
-      - name: Find covs
-        run: |
-          pwd
-          git rev-parse --show-toplevel
-          echo "working-directory? ${{ github.workspace }}"
-          find . -type f -name "*_coverage.xml" -print
-          find . -type d -name ".reports" -print
       - name: Upload coverage XML
         if: always()
         uses: actions/upload-artifact@v4
@@ -69,4 +62,4 @@ jobs:
           name: coverage-${{ matrix.minor_versions }}
           include-hidden-files: true
           path: |
-            **/.reports/*_coverage.xml
+            ./.reports/*_coverage.xml
