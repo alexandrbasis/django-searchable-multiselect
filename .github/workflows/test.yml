@@ -55,3 +55,11 @@ jobs:
           pip install $TEST_DEPENDENCIES
       - name: test
         run: tox -m "py3${{ matrix.minor_versions }}"
+      - name: Coverage Markdown Summary
+        if: always()
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: .reports/*_coverage.xml
+          badge: true
+          format: markdown
+          output: both
