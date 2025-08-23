@@ -68,4 +68,4 @@ jobs:
         with:
           name: coverage-${{ matrix.minor_versions }}
           path: |
-            ./.reports/*_coverage.xml
+            **/.reports/*_coverage.xml
