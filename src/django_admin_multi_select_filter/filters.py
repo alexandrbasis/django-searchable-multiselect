@@ -14,16 +14,15 @@ class MultiSelectFieldListFilter(admin.FieldListFilter):
         super().__init__(field, request, params, model, model_admin, field_path)
 
         self.lookup_val = self.used_parameters.get(self.lookup_kwarg, [])
-        if len(self.lookup_val) == 1 and self.lookup_val[0] == "":
+        if len(self.lookup_val) == 1 and (self.lookup_val[0] == [""] or self.lookup_val[0] == ""):
             self.lookup_val = []
         elif len(self.lookup_val) == 1 and not isinstance(self.lookup_val[0], str):
-            # In Django 5.0, we get an extra list
             self.lookup_val = self.lookup_val[0]
         self.lookup_val_isnull = self.used_parameters.get(self.lookup_kwarg_isnull)
 
         self.empty_value_display = model_admin.get_empty_value_display()
         parent_model, reverse_path = reverse_field_path(model, field_path)
-        # Obey parent ModelAdmin queryset when deciding which options to show
+
         if model == parent_model:
             queryset = model_admin.get_queryset(request)
         else:

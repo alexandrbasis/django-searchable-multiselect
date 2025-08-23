@@ -29,7 +29,7 @@ dependencies = [
 [project.optional-dependencies]
 django42 = ["django~=4.2.0"]
 django52 = ["django~=5.2.0"]
-test = ["pytest", "pytest-django", "factory_boy"]
+test = ["pytest", "pytest-django", "factory_boy", "pytest-cov"]
 
 [project.urls]
 homepage = "https://github.com/JobDoesburg/django-admin-multi-select-filter"
