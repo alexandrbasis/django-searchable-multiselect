@@ -60,4 +60,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.minor_versions }}
-          path: .reports/*_coverage.xml
+          path: |
+            .reports/*_coverage.xml
+            .tox/**/.reports/*_coverage.xml
