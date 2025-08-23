@@ -44,6 +44,7 @@ jobs:
       matrix:
         minor_versions: [9, 10, 11, 12, 13]
     steps:
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
