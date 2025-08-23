@@ -5,8 +5,8 @@ from tests.app.models import Item
 
 pytestmark = pytest.mark.django_db
 
-class TestMultiSelectRelatedFieldListFilter:
 
+class TestMultiSelectRelatedFieldListFilter:
     def test_in_param_comma_separated_parses_lookup_val(self, admin_client, sample_data):
         url = reverse("admin:testapp_item_changelist")
         a, b, _ = sample_data["tags"]
