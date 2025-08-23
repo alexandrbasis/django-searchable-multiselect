@@ -1,7 +1,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from tests.app.models import Tag, Item
+from tests.app.models import Item, Tag
 
 
 class TagFactory(DjangoModelFactory):

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin.options import IncorrectLookupParameters
-from django.contrib.admin.utils import reverse_field_path, prepare_lookup_value
+from django.contrib.admin.utils import reverse_field_path
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _
