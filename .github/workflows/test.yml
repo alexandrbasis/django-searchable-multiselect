@@ -53,4 +53,4 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install $TEST_DEPENDENCIES
       - name: test
-        run: tox -e "py3${{ matrix.minor_versions }}"
+        run: tox -m "py3${{ matrix.minor_versions }}"
