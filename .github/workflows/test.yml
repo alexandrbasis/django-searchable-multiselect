@@ -67,5 +67,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.minor_versions }}
+          include-hidden-files: true
           path: |
             **/.reports/*_coverage.xml
