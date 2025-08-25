@@ -14,29 +14,23 @@ class MultiSelectFieldListFilter(admin.FieldListFilter):
         super().__init__(field, request, params, model, model_admin, field_path)
 
         self.lookup_val = self.used_parameters.get(self.lookup_kwarg, [])
-        if len(self.lookup_val) == 1 and self.lookup_val[0] == "":
+        if len(self.lookup_val) == 1 and (self.lookup_val[0] == [""] or self.lookup_val[0] == ""):
             self.lookup_val = []
-        elif len(self.lookup_val) == 1 and type(self.lookup_val[0]) != str:
-            # In Django 5.0, we get an extra list
+        elif len(self.lookup_val) == 1 and not isinstance(self.lookup_val[0], str):
             self.lookup_val = self.lookup_val[0]
         self.lookup_val_isnull = self.used_parameters.get(self.lookup_kwarg_isnull)
 
         self.empty_value_display = model_admin.get_empty_value_display()
         parent_model, reverse_path = reverse_field_path(model, field_path)
-        # Obey parent ModelAdmin queryset when deciding which options to show
+
         if model == parent_model:
             queryset = model_admin.get_queryset(request)
         else:
             queryset = parent_model._default_manager.all()
-        self.lookup_choices = (
-            queryset.distinct().order_by(field.name).values_list(field.name, flat=True)
-        )
+        self.lookup_choices = queryset.distinct().order_by(field.name).values_list(field.name, flat=True)
         self.field_verboses = {}
         if self.field.choices:
-            self.field_verboses = {
-                field_value: field_verbose
-                for field_value, field_verbose in self.field.choices
-            }
+            self.field_verboses = {field_value: field_verbose for field_value, field_verbose in self.field.choices}
 
     def expected_parameters(self):
         return [self.lookup_kwarg, self.lookup_kwarg_isnull]
@@ -44,9 +38,7 @@ class MultiSelectFieldListFilter(admin.FieldListFilter):
     def choices(self, changelist):
         yield {
             "selected": not self.lookup_val and self.lookup_val_isnull is None,
-            "query_string": changelist.get_query_string(
-                remove=[self.lookup_kwarg, self.lookup_kwarg_isnull]
-            ),
+            "query_string": changelist.get_query_string(remove=[self.lookup_kwarg, self.lookup_kwarg_isnull]),
             "display": _("All"),
         }
         include_none = False
@@ -73,18 +65,14 @@ class MultiSelectFieldListFilter(admin.FieldListFilter):
             else:
                 yield {
                     "selected": val in self.lookup_val,
-                    "query_string": changelist.get_query_string(
-                        remove=[self.lookup_kwarg]
-                    ),
+                    "query_string": changelist.get_query_string(remove=[self.lookup_kwarg]),
                     "display": self.field_verboses.get(val, val),
                 }
 
         if include_none:
             yield {
                 "selected": bool(self.lookup_val_isnull),
-                "query_string": changelist.get_query_string(
-                    {self.lookup_kwarg_isnull: "True"}, [self.lookup_kwarg]
-                ),
+                "query_string": changelist.get_query_string({self.lookup_kwarg_isnull: "True"}, [self.lookup_kwarg]),
                 "display": self.empty_value_display,
             }
 
@@ -94,20 +82,18 @@ class MultiSelectRelatedFieldListFilter(admin.RelatedFieldListFilter):
         super().__init__(field, request, params, model, model_admin, field_path)
         self.lookup_kwarg = "%s__%s__in" % (field_path, field.target_field.name)
         self.lookup_kwarg_isnull = "%s__isnull" % field_path
-        values = params.get(self.lookup_kwarg, [])
-        if len(values) == 1 and type(values[0]) != str:
-            # In Django 5.0, we get an extra list
-            values = values[0]
-        self.lookup_val = values.split(",") if values else []
+
+        values = request.GET.getlist(self.lookup_kwarg)
+        if len(values) == 1 and "," in values[0]:
+            values = values[0].split(",")
+        self.lookup_val = [str(value) for value in values if value]
+
         self.lookup_choices = self.field_choices(field, request, model_admin)
 
     def choices(self, changelist):
         yield {
-            "selected": (self.lookup_val is None or self.lookup_val == [])
-            and not self.lookup_val_isnull,
-            "query_string": changelist.get_query_string(
-                remove=[self.lookup_kwarg, self.lookup_kwarg_isnull]
-            ),
+            "selected": (self.lookup_val is None or self.lookup_val == []) and not self.lookup_val_isnull,
+            "query_string": changelist.get_query_string(remove=[self.lookup_kwarg, self.lookup_kwarg_isnull]),
             "display": _("All"),
         }
 
@@ -123,8 +109,7 @@ class MultiSelectRelatedFieldListFilter(admin.RelatedFieldListFilter):
                 values = self.lookup_val + [str(pk_val)]
 
             yield {
-                "selected": self.lookup_val is not None
-                and str(pk_val) in self.lookup_val,
+                "selected": self.lookup_val is not None and str(pk_val) in self.lookup_val,
                 "query_string": changelist.get_query_string(
                     {self.lookup_kwarg: ",".join(values)}, [self.lookup_kwarg_isnull]
                 ),
@@ -134,9 +119,7 @@ class MultiSelectRelatedFieldListFilter(admin.RelatedFieldListFilter):
         if self.include_empty_choice:
             yield {
                 "selected": bool(self.lookup_val_isnull),
-                "query_string": changelist.get_query_string(
-                    {self.lookup_kwarg_isnull: "True"}, [self.lookup_kwarg]
-                ),
+                "query_string": changelist.get_query_string({self.lookup_kwarg_isnull: "True"}, [self.lookup_kwarg]),
                 "display": empty_title,
             }
 
@@ -153,11 +136,7 @@ class ExclusiveMultiSelectRelatedFieldListFilter(MultiSelectRelatedFieldListFilt
                 return queryset
 
             queryset = queryset.alias(
-                nmatch=Count(
-                    self.field_path,
-                    filter=Q(**{f'{self.lookup_kwarg}': choices}),
-                    distinct=True
-                )
+                nmatch=Count(self.field_path, filter=Q(**{f"{self.lookup_kwarg}": choices}), distinct=True)
             ).filter(nmatch=choice_len)
             return queryset
 
