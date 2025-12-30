@@ -1,8 +1,8 @@
-# Django Admin Searchable Filter
+# Django Searchable Multiselect
 
 A Django admin filter library with multi-select functionality, searchable dropdown, and chips UI.
 
-![Python](https://img.shields.io/pypi/pyversions/django-admin-searchable-filter)
+![Python](https://img.shields.io/pypi/pyversions/django-searchable-multiselect)
 ![Django](https://img.shields.io/badge/django-4.2%20%7C%205.0%20%7C%205.1%20%7C%205.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -17,7 +17,7 @@ A Django admin filter library with multi-select functionality, searchable dropdo
 ## Installation
 
 ```bash
-pip install django-admin-searchable-filter
+pip install django-searchable-multiselect
 ```
 
 ## Quick Start
@@ -102,8 +102,8 @@ The searchable filter shows selected items as chips and provides a search box th
 
 ```bash
 # Clone and setup
-git clone https://github.com/alexandrbasis/django-admin-searchable-filter.git
-cd django-admin-searchable-filter
+git clone https://github.com/alexandrbasis/django-searchable-multiselect.git
+cd django-searchable-multiselect
 python -m venv venv
 source venv/bin/activate
 pip install -e ".[test]"
