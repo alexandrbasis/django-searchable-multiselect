@@ -1,0 +1,201 @@
+{% load i18n %}
+
+<details class="searchable-multi-filter" id="{{ spec.filter_id }}" open>
+  <summary>{% blocktranslate with filter_title=title %} By {{ filter_title }} {% endblocktranslate %}</summary>
+
+  <div class="filter-chips">
+    {% for choice in choices %}
+      {% if choice.selected and not choice.is_all %}
+        <span class="filter-chip">
+          {{ choice.display }}
+          <a href="{{ choice.query_string }}" class="filter-chip-remove" title="{% trans 'Remove' %}">&times;</a>
+        </span>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <input type="text" class="filter-search" placeholder="{% trans 'Search...' %}">
+
+  <div class="filter-options">
+    <ul>
+      {% for choice in choices %}
+        <li data-display="{{ choice.display|lower }}" {% if choice.is_all %}class="filter-all-option"{% endif %}>
+          <a href="{{ choice.query_string }}"{% if choice.selected %} class="selected"{% endif %}>
+            {% if choice.selected and not choice.is_all %}&#10003; {% endif %}{{ choice.display }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</details>
+
+<style>
+.searchable-multi-filter {
+  margin-bottom: 15px;
+}
+
+.searchable-multi-filter summary {
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px 0;
+  color: var(--body-quiet-color, #666);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+}
+
+.searchable-multi-filter .filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 8px 0;
+  min-height: 0;
+}
+
+.searchable-multi-filter .filter-chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--primary, #417690);
+  color: var(--primary-fg, #fff);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  gap: 5px;
+}
+
+.searchable-multi-filter .filter-chip-remove {
+  color: var(--primary-fg, #fff);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.searchable-multi-filter .filter-chip-remove:hover {
+  opacity: 1;
+}
+
+.searchable-multi-filter .filter-search {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.searchable-multi-filter .filter-search:focus {
+  outline: none;
+  border-color: var(--primary, #417690);
+}
+
+.searchable-multi-filter .filter-options {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  display: none;
+}
+
+.searchable-multi-filter .filter-options.visible {
+  display: block;
+}
+
+.searchable-multi-filter .filter-options ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.searchable-multi-filter .filter-options li {
+  border-bottom: 1px solid var(--hairline-color, #e8e8e8);
+}
+
+.searchable-multi-filter .filter-options li:last-child {
+  border-bottom: none;
+}
+
+.searchable-multi-filter .filter-options li.hidden {
+  display: none;
+}
+
+.searchable-multi-filter .filter-options a {
+  display: block;
+  padding: 6px 10px;
+  color: var(--body-fg, #333);
+  text-decoration: none;
+  font-size: 0.8125rem;
+}
+
+.searchable-multi-filter .filter-options a:hover {
+  background: var(--darkened-bg, #f5f5f5);
+}
+
+.searchable-multi-filter .filter-options a.selected {
+  background: var(--selected-bg, #e4e4e4);
+  font-weight: 600;
+}
+
+.searchable-multi-filter .filter-all-option {
+  background: var(--darkened-bg, #f8f8f8);
+}
+
+.searchable-multi-filter .filter-no-results {
+  padding: 10px;
+  text-align: center;
+  color: var(--body-quiet-color, #666);
+  font-size: 0.8125rem;
+}
+</style>
+
+<script>
+(function() {
+  var container = document.getElementById('{{ spec.filter_id }}');
+  if (!container) return;
+
+  var searchInput = container.querySelector('.filter-search');
+  var optionsDiv = container.querySelector('.filter-options');
+  var optionsList = optionsDiv.querySelector('ul');
+  var items = optionsList.querySelectorAll('li:not(.filter-all-option)');
+
+  // Show dropdown on focus
+  searchInput.addEventListener('focus', function() {
+    optionsDiv.classList.add('visible');
+  });
+
+  // Hide dropdown on blur (with delay to allow clicking options)
+  searchInput.addEventListener('blur', function() {
+    setTimeout(function() {
+      optionsDiv.classList.remove('visible');
+    }, 150);
+  });
+
+  searchInput.addEventListener('input', function() {
+    var query = this.value.toLowerCase().trim();
+    var visibleCount = 0;
+
+    items.forEach(function(item) {
+      var display = item.getAttribute('data-display') || '';
+      if (query === '' || display.indexOf(query) !== -1) {
+        item.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+
+    var noResults = container.querySelector('.filter-no-results');
+    if (visibleCount === 0 && query !== '') {
+      if (!noResults) {
+        noResults = document.createElement('li');
+        noResults.className = 'filter-no-results';
+        noResults.textContent = '{% trans "No matches found" %}';
+        optionsList.appendChild(noResults);
+      }
+    } else if (noResults) {
+      noResults.remove();
+    }
+  });
+})();
+</script>

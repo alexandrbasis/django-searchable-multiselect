@@ -8,6 +8,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.admin",
+    "django_admin_multi_select_filter",
     "tests.app",
 ]
 

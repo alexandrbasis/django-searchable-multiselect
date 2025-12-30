@@ -1,29 +1,33 @@
 [project]
-name = "django-admin-multi-select-filter"
-version = "1.5.0"
-description = "Django admin filter for multiple select"
+name = "django-admin-searchable-filter"
+version = "2.0.0"
+description = "Django admin multi-select filter with searchable dropdown and chips UI"
 readme = "README.md"
-authors = [{ name = "Job Doesburg", email = "job.doesburg@gmail.com" }]
+authors = [{ name = "Alexandr Basis", email = "basisalexandr@gmail.com" }]
 license = { file = "LICENSE" }
-requires-python = ">=3"
+requires-python = ">=3.9"
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Framework :: Django",
-    "Framework :: Django :: 3.0",
-    "Framework :: Django :: 3.1",
-    "Framework :: Django :: 3.2",
-    "Framework :: Django :: 4.0",
-    "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+keywords = ["django", "admin", "filter", "multi-select", "searchable", "dropdown"]
 
 dependencies = [
-    "django>=3",
+    "django>=4.2",
 ]
 
 [project.optional-dependencies]
@@ -32,9 +36,9 @@ django52 = ["django~=5.2.0"]
 test = ["pytest", "pytest-django", "factory_boy", "pytest-cov"]
 
 [project.urls]
-homepage = "https://github.com/JobDoesburg/django-admin-multi-select-filter"
-repository = "https://github.com/JobDoesburg/django-admin-multi-select-filter"
-documentation = "https://github.com/JobDoesburg/django-admin-multi-select-filter"
+homepage = "https://github.com/alexandrbasis/django-admin-searchable-filter"
+repository = "https://github.com/alexandrbasis/django-admin-searchable-filter"
+documentation = "https://github.com/alexandrbasis/django-admin-searchable-filter#readme"
 
 [build-system]
 requires      = ["setuptools>=61.0.0", "wheel"]
@@ -50,7 +54,7 @@ where = ["src"]
 line-length = 119
 output-format = "grouped"
 show-fixes = true
-target-version = "py313"
+target-version = "py39"
 exclude = [".svn", "CVS", ".bzr", ".hg",".git", "__pycache__", ".tox", ".eggs", "*.egg", ".venv", "env", "venv", "build"]
 
 [tool.ruff.lint]

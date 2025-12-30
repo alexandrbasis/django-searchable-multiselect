@@ -47,7 +47,7 @@ class TestMultiSelectRelatedFieldListFilter:
         qs = list(resp.context["cl"].queryset)
         assert set(qs) == set(Item.objects.all())
 
-    def _get_filter_spec(self, response, filter_cls_name="MultiSelectRelatedFieldListFilter"):
+    def _get_filter_spec(self, response, filter_cls_name="SearchableMultiSelectRelatedFieldListFilter"):
         cl = response.context["cl"]
         for spec in cl.filter_specs:
             if spec.__class__.__name__ == filter_cls_name:

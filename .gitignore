@@ -127,3 +127,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Claude Code
+.claude/
+CLAUDE.md
+
+# Demo
+demo/
+
+# Temporary files
+*.md.bak
+1.md
+
+# Test migrations
+tests/app/migrations/

@@ -1,4 +1,4 @@
-name: django-admin-multi-select-filter-test
+name: django-admin-searchable-filter-test
 on: [push]
 env:
   TEST_DEPENDENCIES: "tox~=4.15.1"

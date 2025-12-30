@@ -142,3 +142,51 @@ class ExclusiveMultiSelectRelatedFieldListFilter(MultiSelectRelatedFieldListFilt
 
         except (ValueError, ValidationError) as e:
             raise IncorrectLookupParameters(e)
+
+
+class SearchableMultiSelectRelatedFieldListFilter(MultiSelectRelatedFieldListFilter):
+    template = "django_admin_multi_select_filter/searchable_filter.html"
+
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        super().__init__(field, request, params, model, model_admin, field_path)
+        self.filter_id = f"searchable-filter-{field_path.replace('__', '-')}"
+
+    def choices(self, changelist):
+        yield {
+            "selected": (self.lookup_val is None or self.lookup_val == []) and not self.lookup_val_isnull,
+            "query_string": changelist.get_query_string(remove=[self.lookup_kwarg, self.lookup_kwarg_isnull]),
+            "display": _("All"),
+            "pk_val": "",
+            "is_all": True,
+        }
+
+        for pk_val, val in self.lookup_choices:
+            if val is None:
+                self.include_empty_choice = True
+                continue
+            val = str(val)
+
+            if str(pk_val) in self.lookup_val:
+                values = [str(v) for v in self.lookup_val if str(v) != str(pk_val)]
+            else:
+                values = self.lookup_val + [str(pk_val)]
+
+            yield {
+                "selected": self.lookup_val is not None and str(pk_val) in self.lookup_val,
+                "query_string": changelist.get_query_string(
+                    {self.lookup_kwarg: ",".join(values)}, [self.lookup_kwarg_isnull]
+                ),
+                "display": val,
+                "pk_val": str(pk_val),
+                "is_all": False,
+            }
+
+        empty_title = self.empty_value_display
+        if self.include_empty_choice:
+            yield {
+                "selected": bool(self.lookup_val_isnull),
+                "query_string": changelist.get_query_string({self.lookup_kwarg_isnull: "True"}, [self.lookup_kwarg]),
+                "display": empty_title,
+                "pk_val": "__isnull__",
+                "is_all": False,
+            }
